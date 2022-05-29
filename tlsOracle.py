@@ -8,10 +8,11 @@ import concurrent.futures
 from cryptography.hazmat.primitives import padding
 
 
-START_URI = ''
-ERROR_URI = ''
-TIME_URI = ''
-CHECK_URI = ''
+START_URI = ""
+ERROR_URI = ""
+TIME_URI = ""
+CHECK_URI = ""
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -20,7 +21,12 @@ def main():
     )
 
     parser.add_argument("-m", "--mode", choices=("error", "time"), help="oracle mode")
-    parser.add_argument("-s", "--sequential", help="sequential mode for time oracle", action='store_true')
+    parser.add_argument(
+        "-s",
+        "--sequential",
+        help="sequential mode for time oracle",
+        action="store_true",
+    )
     parser.add_argument("-n", "--name", help="name", type=str)
     args = parser.parse_args()
     config = vars(args)
@@ -47,7 +53,7 @@ def main():
         c = [e[i : i + blockSize] for i in range(0, len(e), blockSize)]
         if args.sequential:
             plaintext = decryptAESTimesec(c, blockSize, cookies)
-            testPlainTextSec(plaintext,cookies, oracle="time")
+            testPlainTextSec(plaintext, cookies, oracle="time")
         else:
             print(f"Dividing blocks to {len(c)-1} processes")
             executor = concurrent.futures.ProcessPoolExecutor(len(c) - 1)
@@ -122,7 +128,7 @@ def decryptAESTime(c, i, blockSize, cookies):
         found = False
         newvalue = 0
         while not found:
-                
+
             cprime[j] = newvalue
             r = requests.get(
                 f"{TIME_URI}{cprime.hex()}{c2.hex()}",
@@ -150,6 +156,7 @@ def decryptAESTime(c, i, blockSize, cookies):
 
     print(f"c2[{i}] Plain text: {plain}")
     return plain
+
 
 def decryptAESTimesec(c, blockSize, cookies):
     plaintexts = bytearray()
@@ -196,7 +203,6 @@ def decryptAESTimesec(c, blockSize, cookies):
         return plaintexts
 
 
-
 def testPlainText(plaintextsFuture, cookies, oracle="error"):
     out = bytearray()
     for plaintext in plaintextsFuture:
@@ -223,6 +229,7 @@ def testPlainTextSec(plaintexts, cookies, oracle="error"):
     print(f"Plaintext: {data.decode()}")
     r = requests.get(url, cookies=cookies)
     print(r.text)
+
 
 if __name__ == "__main__":
     main()
