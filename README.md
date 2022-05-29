@@ -2,7 +2,7 @@
 Oracle based attack for TLS-AES
 # Run instructions
 
-You will need to provided your own oracle URIs.
+You will need to supply your own oracle URIs.
 
 AES Oracle Padding attack
 
